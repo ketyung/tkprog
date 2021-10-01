@@ -4,16 +4,16 @@ use {
         entrypoint::ProgramResult,
         msg,
         pubkey::Pubkey,
-        program_error::ProgramError,
-        program_pack::{Pack},
     },
     
     spl_token::instruction::{initialize_mint},//,mint_to} 
   
+    arrayref::{array_ref,  array_refs},
+
 };
 
 
-pub fn process_instruction(program_id: &Pubkey,accounts: &[AccountInfo], instruction_data: &[u8],) 
+pub fn process_instruction(_program_id: &Pubkey,accounts: &[AccountInfo], instruction_data: &[u8],) 
 -> ProgramResult {
 
     const L : usize = 9; 
@@ -25,6 +25,8 @@ pub fn process_instruction(program_id: &Pubkey,accounts: &[AccountInfo], instruc
 
     let token_count = u64::from_le_bytes(*amount);
 
+    let account_info_iter = &mut accounts.iter();
+
     match mode {
 
         1 => {
@@ -33,16 +35,23 @@ pub fn process_instruction(program_id: &Pubkey,accounts: &[AccountInfo], instruc
 
             let token_account = next_account_info(account_info_iter)?; // expecting the last acc is the token acc
 
-            mint_token(signer_account, token_account, token_count);
+            if *token_account.owner == spl_token::id() {
+                mint_token(signer_account, token_account, token_count);
+            }
+
+            Ok(())
 
         },
 
-        _ => msg!("None mode:{}", mode ),
+        _ => {
+            msg!("None mode:{}", mode );
+            Ok(())
+        },
 
     }
 }
 
-fn mint_token(signer_account : &AccountInfo, token_account : &AccountInfo, token_count : u64 ){
+fn mint_token(signer_account : &AccountInfo, token_account : &AccountInfo, _token_count : u64 ){
 
     let _init_mint_ins = initialize_mint(
         &spl_token::ID,
