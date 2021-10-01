@@ -8,7 +8,7 @@ use {
         program::invoke,
     },
     
-    spl_token::instruction::{initialize_mint},//,mint_to} 
+    spl_token::instruction::{initialize_mint,mint_to},
   
     arrayref::{array_ref,  array_refs},
 
@@ -43,7 +43,7 @@ pub fn process_instruction(_program_id: &Pubkey,accounts: &[AccountInfo], instru
     }
 }
 
-fn mint_token(accounts: &[AccountInfo], _token_count : u64 )-> ProgramResult{
+fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let account_info_iter = &mut accounts.iter();
 
@@ -58,7 +58,7 @@ fn mint_token(accounts: &[AccountInfo], _token_count : u64 )-> ProgramResult{
         return Err(ProgramError::IncorrectProgramId);
     }
 
-    let init_mint_ins = initialize_mint(
+    let ix = initialize_mint(
         &spl_token::ID,
         &token_account.key,
         &signer_account.key,
@@ -67,11 +67,27 @@ fn mint_token(accounts: &[AccountInfo], _token_count : u64 )-> ProgramResult{
     )
     .unwrap();
 
-    invoke(&init_mint_ins,  &[
+    invoke(&ix,  &[
         token_account.clone(),
         signer_account.clone(),
         token_program.clone(),
     ])?;
+
+    let ix = mint_to(
+        &spl_token::ID,
+        &token_account.key,
+        &signer_account.key,
+        &signer_account.key,
+        &[],
+        token_count,
+    )?;
+
+    invoke(&ix,  &[
+        token_account.clone(),
+        signer_account.clone(),
+        token_program.clone(),
+    ])?;
+
 
     Ok(())
 }
