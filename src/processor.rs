@@ -49,6 +49,8 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let signer_account = next_account_info(account_info_iter)?;
 
+    msg!("To.mint::{}", token_count);
+    
     msg!("signer.acc:{:?}", signer_account.key);
 
 
