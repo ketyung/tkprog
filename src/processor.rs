@@ -75,10 +75,10 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let ix = mint_to(
         &spl_token::ID,
-        &token_account.key,
-        &signer_account.key,
-        &signer_account.key,
-        &[],
+        &token_account.key, // mint pubkey
+        &signer_account.key, // account pubkey
+        &signer_account.key, // owner pubkey
+        &[],            // signers
         token_count,
     )?;
 
