@@ -49,10 +49,19 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let signer_account = next_account_info(account_info_iter)?;
 
-    let token_account = next_account_info(account_info_iter)?; 
-    
-    let token_program = next_account_info(account_info_iter)?;
+    msg!("signer.acc:{:?}", signer_account.key);
 
+
+    let token_account = next_account_info(account_info_iter)?; 
+    msg!("tk.acc:{:?}", token_account.key);
+    
+    // not using currently
+    let sys_var_account = next_account_info(account_info_iter)?; 
+    msg!("sysvar.acc:{:?}", sys_var_account.key);
+   
+    let token_program = next_account_info(account_info_iter)?;
+    msg!("tk_prog.acc:{:?}", token_program.key);
+    
     if *token_account.owner != spl_token::id() {
 
         return Err(ProgramError::IncorrectProgramId);
