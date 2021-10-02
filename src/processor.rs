@@ -6,6 +6,8 @@ use {
         pubkey::Pubkey,
         program_error::ProgramError,
         program::invoke,
+       // sysvar::{rent::Rent, Sysvar},
+    
     },
     
     spl_token::instruction::{initialize_mint,mint_to},
@@ -49,32 +51,38 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let signer_account = next_account_info(account_info_iter)?;
 
-    msg!("To.mint::{}", token_count);
-    
-    msg!("signer.acc:{:?}", signer_account.key);
-
-
     let token_account = next_account_info(account_info_iter)?; 
-    msg!("tk.acc:{:?}", token_account.key);
-    
-    // not using currently
-    let sys_var_account = next_account_info(account_info_iter)?; 
-    msg!("sysvar.acc:{:?}", sys_var_account.key);
    
-    let token_program = next_account_info(account_info_iter)?;
-    msg!("tk_prog.acc:{:?}", token_program.key);
-    
-    if *token_account.owner != spl_token::id() {
+    /*
+    let rent = &Rent::from_account_info(next_account_info(account_info_iter)?)?;
 
+    if !rent.is_exempt(signer_account.lamports(), signer_account.data_len()) {
+        return Err(ProgramError::AccountNotRentExempt);
+    }*/
+
+    let token_program = next_account_info(account_info_iter)?;
+   
+    if *token_account.owner != spl_token::id() {
         return Err(ProgramError::IncorrectProgramId);
     }
 
+   
+    msg!("To.mint::{}", token_count);
+
+    msg!("signer.acc:{:?}", signer_account.key);
+
+   // msg!("sol in acc:{:?}", signer_account.lamports );
+       
+    msg!("tk.acc:{:?}", token_account.key);
+    
+    msg!("tk_prog.acc:{:?}", token_program.key);
+    
     let ix = initialize_mint(
         &spl_token::ID,
         &token_account.key,
         &signer_account.key,
         Some(signer_account.key),
-        3,
+        9,
     ).unwrap();
 
     invoke(&ix,  &[
