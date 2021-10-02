@@ -64,8 +64,7 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
         &signer_account.key,
         Some(signer_account.key),
         3,
-    )
-    .unwrap();
+    ).unwrap();
 
     invoke(&ix,  &[
         token_account.clone(),
