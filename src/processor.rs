@@ -5,12 +5,15 @@ use {
         msg,
         pubkey::Pubkey,
         program_error::ProgramError,
-        //program::invoke,
+        program::invoke,
        // sysvar::{rent::Rent, Sysvar},
     
+  
     },
     
-   // spl_token::instruction::{initialize_mint,mint_to},
+    spl_associated_token_account::get_associated_token_address,
+
+    spl_token::instruction::{/*initialize_mint,*/mint_to},
   
     arrayref::{array_ref,  array_refs},
 
@@ -89,7 +92,28 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
     msg!("tk.acc:{:?}", token_account.key);
     
     msg!("tk_prog.acc:{:?}", token_program.key);
+
+    let ata = get_associated_token_address(&signer_account.key, 
+        &token_account.key);
+    msg!("associated token acc: {:?}",ata );
+
     
+    let ix = mint_to(
+        &spl_token::ID,
+        &token_account.key, // mint pubkey
+        //&ata,  
+        &signer_account.key, // account pubkey
+        &signer_account.key, // owner pubkey
+        &[],            // signers
+        token_count,
+    )?;
+
+    invoke(&ix,  &[
+        token_account.clone(),
+        signer_account.clone(),
+        token_program.clone(),
+    ])?;
+
     /*
     let ix = initialize_mint(
         &spl_token::ID,
@@ -105,21 +129,7 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
         token_program.clone(),
     ])?;
 
-    let ix = mint_to(
-        &spl_token::ID,
-        &token_account.key, // mint pubkey
-        &signer_account.key, // account pubkey
-        &signer_account.key, // owner pubkey
-        &[],            // signers
-        token_count,
-    )?;
-
-    invoke(&ix,  &[
-        token_account.clone(),
-        signer_account.clone(),
-        token_program.clone(),
-    ])?;
-
+   
     */
 
     Ok(())
