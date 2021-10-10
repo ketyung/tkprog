@@ -5,12 +5,12 @@ use {
         msg,
         pubkey::Pubkey,
         program_error::ProgramError,
-        program::invoke,
+        //program::invoke,
        // sysvar::{rent::Rent, Sysvar},
     
     },
     
-    spl_token::instruction::{initialize_mint,mint_to},
+   // spl_token::instruction::{initialize_mint,mint_to},
   
     arrayref::{array_ref,  array_refs},
 
@@ -90,12 +90,13 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
     
     msg!("tk_prog.acc:{:?}", token_program.key);
     
+    /*
     let ix = initialize_mint(
         &spl_token::ID,
         &token_account.key,
         &signer_account.key,
         Some(signer_account.key),
-        9,
+        2,
     ).unwrap();
 
     invoke(&ix,  &[
@@ -119,6 +120,7 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
         token_program.clone(),
     ])?;
 
+    */
 
     Ok(())
 }
