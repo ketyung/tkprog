@@ -97,13 +97,22 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
         &token_account.key);
     msg!("associated token acc: {:?}",ata );
 
-    
+    /*
+     * 
+     *  SPLToken.TOKEN_PROGRAM_ID, // 通常是固定值, token program id
+      TEST_MINT, // mint
+      ALICE_TOKEN_ADDRESS_1, // 收token的地址 (需要是token account)
+      FEE_PAYER.publicKey, // mint 的 auth
+      [],
+     */
+
     let ix = mint_to(
         &spl_token::ID,
         &token_account.key, // mint pubkey
         //&ata,  
+        &token_account.key, 
         &signer_account.key, // account pubkey
-        &signer_account.key, // owner pubkey
+       // &signer_account.key, // owner pubkey
         &[],            // signers
         token_count,
     )?;
