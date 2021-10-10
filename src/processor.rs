@@ -53,18 +53,32 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
     let signer_account = next_account_info(account_info_iter)?;
 
     let token_account = next_account_info(account_info_iter)?; 
+        
+    let token_program = next_account_info(account_info_iter)?;
    
-    /*
-    let rent = &Rent::from_account_info(next_account_info(account_info_iter)?)?;
+    msg!("try no checking sysvar.rent!!");
+    /* 
+
+    let sys_var_account = next_account_info(account_info_iter)?;
+    let rent = &Rent::from_account_info(sys_var_account)?;
 
     if !rent.is_exempt(signer_account.lamports(), signer_account.data_len()) {
         return Err(ProgramError::AccountNotRentExempt);
-    }*/
+    }
+    else {
 
-    let token_program = next_account_info(account_info_iter)?;
-   
+        msg!("Account is rent exempt!!, sys.var.acc is :{:?}...x", sys_var_account.key);//, sys_var_account.key);
+    }
+*/
+
     if *token_account.owner != spl_token::id() {
+        msg!("token_account.owner is {:?}, whereas spl_token prog id is::{:?}", 
+        token_account.owner, spl_token::id());
         return Err(ProgramError::IncorrectProgramId);
+    }
+    else {
+
+        msg!("token_acc.owner is::{:?}", token_account.owner);
     }
 
    
@@ -72,8 +86,6 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     msg!("signer.acc:{:?}", signer_account.key);
 
-   // msg!("sol in acc:{:?}", signer_account.lamports );
-       
     msg!("tk.acc:{:?}", token_account.key);
     
     msg!("tk_prog.acc:{:?}", token_program.key);
