@@ -55,6 +55,8 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let signer_account = next_account_info(account_info_iter)?;
 
+    let token_mint = next_account_info(account_info_iter)?; 
+    
     let token_account = next_account_info(account_info_iter)?; 
         
     let token_program = next_account_info(account_info_iter)?;
@@ -89,6 +91,8 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     msg!("signer.acc:{:?}", signer_account.key);
 
+    msg!("tk.mint:{:?}", token_mint.key);
+  
     msg!("tk.acc:{:?}", token_account.key);
     
     msg!("tk_prog.acc:{:?}", token_program.key);
@@ -108,7 +112,7 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let ix = mint_to(
         &spl_token::ID,
-        &token_account.key, // mint pubkey
+        &token_mint.key, // mint pubkey
         //&ata,  
         &token_account.key, 
         &signer_account.key, // account pubkey
