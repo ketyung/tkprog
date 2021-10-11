@@ -129,6 +129,7 @@ fn mint_token(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64 )-
     // account 
     let addr = &[token_account.key.as_ref()];
     let (pda, _bump_seed) = Pubkey::find_program_address(addr, program_id);
+    // need to store the token account, the mint 
 
     let owner_change_ix = spl_token::instruction::set_authority(
         token_program.key,
