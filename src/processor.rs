@@ -11,7 +11,7 @@ use {
   
     },
     
-    spl_associated_token_account::get_associated_token_address,
+   // spl_associated_token_account::get_associated_token_address,
 
     spl_token::instruction::{/*initialize_mint,*/mint_to},
   
@@ -61,8 +61,7 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
         
     let token_program = next_account_info(account_info_iter)?;
    
-    msg!("try no checking sysvar.rent!!");
-    /* 
+    /* // no need to check!
 
     let sys_var_account = next_account_info(account_info_iter)?;
     let rent = &Rent::from_account_info(sys_var_account)?;
@@ -81,14 +80,12 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
         token_account.owner, spl_token::id());
         return Err(ProgramError::IncorrectProgramId);
     }
-    else {
 
-        msg!("token_acc.owner is::{:?}", token_account.owner);
-    }
-
+    
    
     msg!("To.mint::{}", token_count);
 
+    /*
     msg!("signer.acc:{:?}", signer_account.key);
 
     msg!("tk.mint:{:?}", token_mint.key);
@@ -100,17 +97,8 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
     let ata = get_associated_token_address(&signer_account.key, 
         &token_account.key);
     msg!("associated token acc: {:?}",ata );
-
-    /*
-     * 
-     *  SPLToken.TOKEN_PROGRAM_ID, // 通常是固定值, token program id
-      TEST_MINT, // mint
-      ALICE_TOKEN_ADDRESS_1, // 收token的地址 (需要是token account)
-      FEE_PAYER.publicKey, // mint 的 auth
-      [],
-     */
-
-
+    */
+  
     let ix = mint_to(
         token_program.key,
         token_mint.key,
@@ -124,7 +112,7 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
     let signers = &[
         signer_account.key.as_ref(),
     ];
-    
+
     invoke_signed(
         &ix,
         &[
