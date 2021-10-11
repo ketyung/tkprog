@@ -1,3 +1,7 @@
+/**
+ * A small program for me to test the token transfer
+ * By Christopher K Y Chee ketyung@techchee.com
+ */
 use {
     solana_program::{
         account_info::{next_account_info, AccountInfo},
@@ -40,6 +44,9 @@ pub fn process_instruction(program_id: &Pubkey,accounts: &[AccountInfo], instruc
             mint_token(program_id, accounts, token_count)
         },
 
+        2 => {
+            tx_to(program_id, accounts, token_count)
+        },
         _ => {
             msg!("None mode:{}", mode );
             Ok(())
@@ -189,6 +196,52 @@ fn mint_token(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64 )-
    
     */
 
+    Ok(())
+}
+
+
+fn tx_to(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64) -> ProgramResult{
+
+
+    let account_info_iter = &mut accounts.iter();
+
+    let signer_account = next_account_info(account_info_iter)?;
+
+    let receiver_account = next_account_info(account_info_iter)?; 
+    
+    let token_account = next_account_info(account_info_iter)?; 
+        
+    let token_program = next_account_info(account_info_iter)?;
+
+    let addr = &[token_account.key.as_ref()];
+       
+    let (pda, bump_seed) = Pubkey::find_program_address(addr, program_id);
+
+    msg!("Goin.to.tx ::{}", token_count);
+       
+    let tf_to_receiver_ix = spl_token::instruction::transfer(
+        token_program.key,
+        token_account.key,
+        receiver_account.key,
+        &pda,
+        &[&pda],
+        token_count,
+    )?;
+
+
+    invoke_signed(&tf_to_receiver_ix,
+        &[
+            token_account.clone(),
+            receiver_account.clone(),
+            signer_account.clone(),
+            token_program.clone(),
+        ],
+        &[&[&token_account.key.as_ref()[..], &[bump_seed]]],
+    )?;
+
+    msg!("Successfully tx to ::{:?}", receiver_account.key);
+    
+    
     Ok(())
 }
 
