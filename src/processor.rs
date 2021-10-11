@@ -5,7 +5,7 @@ use {
         msg,
         pubkey::Pubkey,
         program_error::ProgramError,
-        program::invoke,
+        program::invoke_signed,
        // sysvar::{rent::Rent, Sysvar},
     
   
@@ -110,6 +110,33 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
       [],
      */
 
+
+    let ix = mint_to(
+        token_program.key,
+        token_mint.key,
+        token_account.key,
+        signer_account.key,
+        &[],
+        token_count,
+    )?;
+
+
+    let signers = &[
+        signer_account.key.as_ref(),
+    ];
+    
+    invoke_signed(
+        &ix,
+        &[
+            token_mint.clone(),
+            token_account.clone(),
+            signer_account.clone(),
+            token_program.clone(),
+        ],
+        &[signers],
+    )?;
+
+    /*
     let ix = mint_to(
         &spl_token::ID,
         &token_mint.key, // mint pubkey
@@ -122,10 +149,10 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
     )?;
 
     invoke(&ix,  &[
-        token_account.clone(),
+        token_mint.clone(),
         signer_account.clone(),
         token_program.clone(),
-    ])?;
+    ])?;*/
 
     /*
     let ix = initialize_mint(
