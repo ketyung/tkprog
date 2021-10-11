@@ -139,8 +139,10 @@ fn mint_token(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64 )-
         &[&signer_account.key],
     )?;
     
-    msg!("Calling the token program to transfer token account {:?} ownership...{:?}",
+    msg!("Calling the token program to transfer token account from [{:?}] ownership...to [{:?}]",
     token_account.key, Some(&pda));
+
+    msg!("Bumpseed is {:?}", _bump_seed);
 
     invoke(
         &owner_change_ix,
