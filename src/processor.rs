@@ -205,7 +205,7 @@ fn tx_to(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64) -> Pro
 
     let account_info_iter = &mut accounts.iter();
 
-    let signer_account = next_account_info(account_info_iter)?;
+    let pda_account = next_account_info(account_info_iter)?;
 
     let receiver_account = next_account_info(account_info_iter)?; 
     
@@ -233,7 +233,7 @@ fn tx_to(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64) -> Pro
         &[
             token_account.clone(),
             receiver_account.clone(),
-            signer_account.clone(),
+            pda_account.clone(),
             token_program.clone(),
         ],
         &[&[&token_account.key.as_ref()[..], &[bump_seed]]],
