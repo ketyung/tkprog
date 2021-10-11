@@ -213,6 +213,7 @@ fn tx_to(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64) -> Pro
         
     let token_program = next_account_info(account_info_iter)?;
 
+    
     let addr = &[token_account.key.as_ref()];
        
     let (pda, bump_seed) = Pubkey::find_program_address(addr, program_id);
@@ -241,7 +242,38 @@ fn tx_to(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64) -> Pro
 
     msg!("Successfully tx to ::{:?}", receiver_account.key);
     
+    // change owner to 
+    // receiver pda
+    /*
+
+    let signer_account = next_account_info(account_info_iter)?;
+
+    let raddr = &[receiver_account.key.as_ref()];
+    let (pda, _bump_seed) = Pubkey::find_program_address(raddr, program_id);
+    // need to store the token account, the mint 
+
+    let owner_change_ix = spl_token::instruction::set_authority(
+        token_program.key,
+        token_account.key,
+        Some(&pda),
+        spl_token::instruction::AuthorityType::AccountOwner,
+        receiver_account.key,
+        &[&signer_account.key],
+    )?;
+
     
+    invoke(
+        &owner_change_ix,
+        &[
+            receiver_account.clone(),
+            receiver_account.clone(),
+            token_program.clone(),
+        ],
+    )?;
+
+    msg!("change from {:?} to {:?}", receiver_account.key, pda);
+   */
+
     Ok(())
 }
 
