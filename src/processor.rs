@@ -5,7 +5,7 @@ use {
         msg,
         pubkey::Pubkey,
         program_error::ProgramError,
-        program::invoke_signed,
+        program::{invoke,invoke_signed},
        // sysvar::{rent::Rent, Sysvar},
     
   
@@ -20,7 +20,7 @@ use {
 };
 
 
-pub fn process_instruction(_program_id: &Pubkey,accounts: &[AccountInfo], instruction_data: &[u8],) 
+pub fn process_instruction(program_id: &Pubkey,accounts: &[AccountInfo], instruction_data: &[u8],) 
 -> ProgramResult {
 
     const L : usize = 9; 
@@ -37,7 +37,7 @@ pub fn process_instruction(_program_id: &Pubkey,accounts: &[AccountInfo], instru
 
         1 => {
 
-            mint_token(accounts, token_count)
+            mint_token(program_id, accounts, token_count)
         },
 
         _ => {
@@ -49,7 +49,7 @@ pub fn process_instruction(_program_id: &Pubkey,accounts: &[AccountInfo], instru
 }
 
 
-fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
+fn mint_token(program_id: &Pubkey, accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
 
     let account_info_iter = &mut accounts.iter();
 
@@ -124,6 +124,32 @@ fn mint_token(accounts: &[AccountInfo],token_count : u64 )-> ProgramResult{
         &[signers],
     )?;
 
+
+    // tx the token to a PDA that is derived from the 
+    // account 
+    let addr = &[token_account.key.as_ref()];
+    let (pda, _bump_seed) = Pubkey::find_program_address(addr, program_id);
+
+    let owner_change_ix = spl_token::instruction::set_authority(
+        token_program.key,
+        token_account.key,
+        Some(&pda),
+        spl_token::instruction::AuthorityType::AccountOwner,
+        signer_account.key,
+        &[&signer_account.key],
+    )?;
+    
+    msg!("Calling the token program to transfer token account {:?} ownership...{:?}",
+    token_account.key, Some(&pda));
+
+    invoke(
+        &owner_change_ix,
+        &[
+            token_account.clone(),
+            signer_account.clone(),
+            token_program.clone(),
+        ],
+    )?;
     /*
     let ix = mint_to(
         &spl_token::ID,
